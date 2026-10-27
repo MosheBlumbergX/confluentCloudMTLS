@@ -1,0 +1,20 @@
+# Secrets
+.env
+*.tfvars
+!*.tfvars.example
+
+# Generated PKI material (private keys, keystores)
+pki/out/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+.terraform.tfstate.lock.info
+
+# Local runtime
+.demo/
+.venv/
+__pycache__/
+.DS_Store

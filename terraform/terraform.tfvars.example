@@ -1,0 +1,19 @@
+# Copy to terraform.tfvars and edit.
+
+owner      = "you@example.com"
+keep_until = "2026-12-31"
+
+region       = "us-east-2"
+availability = "HIGH"
+
+# Applied to every AWS resource (VPC, endpoint, EC2, EBS, S3, IAM, Route 53).
+aws_tags = {
+  owner_email = "you@example.com"
+  keep_until  = "2026-12-31"
+  project     = "confluent-cloud-mtls-demo"
+}
+
+# Optional: reuse an existing VPC instead of creating one (e.g. at VPC quota).
+# Subnets: one per AZ; the first must have internet access for the client host.
+# existing_vpc_id     = "vpc-xxxxxxxx"
+# existing_subnet_ids = ["subnet-aaaa", "subnet-bbbb", "subnet-cccc"]

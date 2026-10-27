@@ -1,0 +1,19 @@
+#!/bin/bash
+# Client host bootstrap: Python mTLS client deps + Kafka Java CLI tools.
+set -euxo pipefail
+
+dnf install -y python3-pip java-21-amazon-corretto-headless tar gzip
+
+mkdir -p /opt/mtls-demo
+python3 -m venv /opt/mtls-demo/.venv
+/opt/mtls-demo/.venv/bin/pip install -q 'confluent-kafka>=2.6.0' 'certifi>=2024.2.2'
+
+# The Apache CDN only carries current releases; archive.apache.org has all of
+# them but is heavily throttled, so it is the fallback.
+tgz="kafka_2.13-${kafka_version}.tgz"
+curl -fsSL --connect-timeout 10 --max-time 300 -o "/tmp/$tgz" "https://dlcdn.apache.org/kafka/${kafka_version}/$tgz" \
+  || curl -fsSL --connect-timeout 10 --max-time 1800 -o "/tmp/$tgz" "https://archive.apache.org/dist/kafka/${kafka_version}/$tgz"
+tar -xzf "/tmp/$tgz" -C /opt
+ln -sfn "/opt/kafka_2.13-${kafka_version}" /opt/kafka
+
+touch /opt/mtls-demo/.ready

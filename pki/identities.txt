@@ -1,0 +1,13 @@
+# Demo client identities issued by scripts/pki.sh.
+# Format: name | issuing CA (trusted|rogue) | subject DN | subjectAltName
+#
+# The identity pools in terraform/mtls.tf match on these attributes with CEL
+# filters, so keep the two in sync if you change them.
+
+platform-admin     | trusted | /C=US/O=Acme Corp/OU=platform/CN=platform-admin       | DNS:platform-admin.acme.demo
+orders-producer    | trusted | /C=US/O=Acme Corp/OU=payments/CN=orders-producer       | DNS:orders-producer.acme.demo
+analytics-consumer | trusted | /C=US/O=Acme Corp/OU=analytics/CN=analytics-consumer   | DNS:analytics-consumer.acme.demo
+fraud-detector     | trusted | /C=US/O=Acme Corp/OU=risk/CN=fraud-detector            | URI:spiffe://acme.demo/ns/risk/sa/fraud-detector
+legacy-producer    | trusted | /C=US/O=Acme Corp/OU=payments/CN=legacy-producer       | DNS:legacy-producer.acme.demo
+marketing-app      | trusted | /C=US/O=Acme Corp/OU=marketing/CN=marketing-app        | DNS:marketing-app.acme.demo
+imposter           | rogue   | /C=US/O=Acme Corp/OU=payments/CN=orders-producer       | DNS:orders-producer.acme.demo

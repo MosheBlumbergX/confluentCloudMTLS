@@ -1,0 +1,65 @@
+# OpenSSL config for the demo PKI (root CA -> intermediate CA -> client certs).
+# Driven by scripts/pki.sh, which sets CA_DIR and CLIENT_SAN for each call.
+
+[ ca ]
+default_ca = CA_default
+
+[ CA_default ]
+dir              = ${ENV::CA_DIR}
+database         = $dir/index.txt
+new_certs_dir    = $dir/newcerts
+serial           = $dir/serial
+crlnumber        = $dir/crlnumber
+certificate      = $dir/ca.crt
+private_key      = $dir/ca.key
+default_md       = sha256
+default_days     = 30
+default_crl_days = 30
+preserve         = no
+policy           = policy_loose
+unique_subject   = no
+copy_extensions  = none
+email_in_dn      = no
+
+[ policy_loose ]
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = supplied
+emailAddress           = optional
+
+[ req ]
+distinguished_name = req_dn
+string_mask        = utf8only
+default_md         = sha256
+prompt             = no
+
+[ req_dn ]
+CN = overridden-by-subj
+
+[ v3_root_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = critical, CA:true
+keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
+
+[ v3_intermediate_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = critical, CA:true, pathlen:0
+keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
+
+# Confluent Cloud requires digitalSignature in Key Usage and clientAuth in
+# Extended Key Usage when those extensions are present (RFC 5280).
+[ v3_client ]
+basicConstraints       = CA:FALSE
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage               = critical, digitalSignature, keyEncipherment
+extendedKeyUsage       = clientAuth
+subjectAltName         = ${ENV::CLIENT_SAN}
+
+[ crl_ext ]
+authorityKeyIdentifier = keyid:always
